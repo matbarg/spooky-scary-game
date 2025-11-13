@@ -59,6 +59,8 @@ public class Door : MonoBehaviour
             trig = true;
         }
     }
+    public void ToggleDoor() { open = !open; }
+
     private void OnTriggerExit(Collider coll)//вход и выход в\из  триггера 
     {
         if (coll.tag == "Player")
