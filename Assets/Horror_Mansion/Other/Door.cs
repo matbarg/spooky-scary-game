@@ -9,7 +9,9 @@ public class Door : MonoBehaviour
     public float DoorOpenAngle = 90.0f;//угол вращения 
     private Vector3 defaulRot;
     private Vector3 openRot;
-    public Text txt;//text 
+    public Text txt;//text
+    public AudioSource openDoorAudio;
+    public AudioSource closeDoorAudio;
     // Start is called before the first frame update
     void Start()
     {
@@ -59,7 +61,18 @@ public class Door : MonoBehaviour
             trig = true;
         }
     }
-    public void ToggleDoor() { open = !open; }
+    public void ToggleDoor() { 
+        open = !open;
+
+        if (open)
+        {
+            openDoorAudio?.Play();
+        }
+        else
+        {
+            closeDoorAudio?.Play();
+        }
+    }
 
     private void OnTriggerExit(Collider coll)//вход и выход в\из  триггера 
     {
