@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// Highlights nearby objects 
+/// </summary>
 public class ProximityHighlighter : MonoBehaviour
 {
     [Header("Settings")]
