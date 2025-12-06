@@ -50,6 +50,11 @@ public class GhostEnemy : MonoBehaviour
     public int maxSpawnAttempts = 20;
     public Transform playerHead;              // optional: Kamera/Head, sonst wird player benutzt
 
+    [Header("Vertreiben")]
+    public float repelDisappearDelay = 1f;   // wie lange der Geist schreit, bevor er verschwindet
+
+    bool isRepelling;
+
     int faceStateHash;
 
     // intern
@@ -57,6 +62,7 @@ public class GhostEnemy : MonoBehaviour
     Collider[] colliders;
 
     bool isActive;
+    public bool IsActive => isActive;
     float lightTimer;
     bool hasKilledPlayer;
 
@@ -379,4 +385,22 @@ public class GhostEnemy : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(player.position, maxSpawnDistance);
     }
+    public void ExternalRepel()
+    {
+        if (!isActive) return;
+        StartCoroutine(ExternalRepelRoutine());
+    }
+
+    IEnumerator ExternalRepelRoutine()
+    {
+        // Schrei / Scream + Sounds
+        HandleRepelled();
+
+        // 0.5 Sekunden warten
+        yield return new WaitForSeconds(1f);
+
+        // dann Geist verschwinden lassen
+        SetVisible(false);
+    }
+
 }
