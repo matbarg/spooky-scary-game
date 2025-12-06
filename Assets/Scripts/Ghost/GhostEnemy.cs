@@ -41,6 +41,9 @@ public class GhostEnemy : MonoBehaviour
     const int FACE_EVIL = 2;
     const int FACE_SCREAM = 3;
 
+    [Header("Höhe über Spieler")]
+    public Vector2 heightOffsetRange = new Vector2(0.2f, 1.3f);
+
     [Header("Spawn-Constraints")]
     public LayerMask spawnBlockMask;          // Wände, Möbel etc. die Spawn blockieren
     public float spawnCollisionCheckRadius = 0.5f;
@@ -180,7 +183,7 @@ public class GhostEnemy : MonoBehaviour
             return false;
         }
 
-        // Kopfposition für Sichtlinie (Head oder grob über dem Player)
+        // Kopfposition des Spielers (Kamera), als Basis für Y und Sichtlinie
         Vector3 headPos = playerHead != null
             ? playerHead.position
             : player.position + Vector3.up * 1.6f;
@@ -190,7 +193,7 @@ public class GhostEnemy : MonoBehaviour
 
         for (int i = 0; i < maxSpawnAttempts; i++)
         {
-            // zufälliger Winkel / Distanz
+            // zufälliger Winkel / Distanz um den Spieler herum
             float angleDeg = Random.Range(0f, 360f);
             float angleRad = angleDeg * Mathf.Deg2Rad;
             float distance = Random.Range(minSpawnDistance, maxSpawnDistance);
@@ -201,23 +204,27 @@ public class GhostEnemy : MonoBehaviour
                 Mathf.Sin(angleRad)
             ) * distance;
 
-            // Höhe beibehalten
-            Vector3 candidatePos = transform.position;
-            candidatePos.x = player.position.x + offset.x;
-            candidatePos.z = player.position.z + offset.z;
+            // zufällige Schwebehöhe relativ zur Kopfposition
+            float heightOffset = Random.Range(heightOffsetRange.x, heightOffsetRange.y);
 
-            // 1) Kollisionscheck – steht der Geist in einer Wand / einem Möbel?
+            Vector3 candidatePos = new Vector3(
+                headPos.x + offset.x,
+                headPos.y + heightOffset,
+                headPos.z + offset.z
+            );
+
+            // 1) Kollisionscheck – nicht in Wände / Möbel
             bool collides = Physics.CheckSphere(
-                candidatePos,
+                candidatePos + Vector3.up * 0.05f,   // minimal anheben, damit er nicht den Boden berührt
                 spawnCollisionCheckRadius,
                 spawnBlockMask,
                 QueryTriggerInteraction.Ignore
             );
 
             if (collides)
-                continue; // ungültiger Punkt, nächster Versuch
+                continue;
 
-            // 2) Sichtlinie vom Spieler zum Geist (ob Wände dazwischen sind)
+            // 2) Sichtlinie vom Kopf zum Geist
             Vector3 dir = candidatePos - headPos;
             float dist = dir.magnitude;
 
@@ -232,7 +239,7 @@ public class GhostEnemy : MonoBehaviour
                     occlusionMask,
                     QueryTriggerInteraction.Ignore))
             {
-                // etwas blockiert die Sicht -> ungültig
+                // etwas blockiert die Sicht (Wand/Decke etc.)
                 continue;
             }
 
@@ -244,13 +251,19 @@ public class GhostEnemy : MonoBehaviour
 
         if (!found)
         {
-            // Dieses Mal kein guter Spawn -> aussetzen
             Debug.Log("GhostEnemy: kein gültiger Spawnpunkt gefunden, überspringe diese Erscheinung.");
             return false;
         }
 
         // Position setzen
         transform.position = chosenPos;
+
+        // GhostFloat-Basis-Höhe an neue Position anpassen
+        var ghostFloat = GetComponent<GhostFloat>();
+        if (ghostFloat != null)
+        {
+            ghostFloat.ResetBaseHeight();
+        }
 
         // zum Spieler schauen (nur um Y drehen)
         Vector3 lookTarget = new Vector3(player.position.x, transform.position.y, player.position.z);

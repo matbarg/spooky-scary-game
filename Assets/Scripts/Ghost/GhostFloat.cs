@@ -1,4 +1,5 @@
 using UnityEngine;
+
 /// <summary>
 /// Make a GO float like a ghost
 /// </summary>
@@ -7,16 +8,22 @@ public class GhostFloat : MonoBehaviour
     public float floatAmplitude = 0.1f;
     public float floatSpeed = 1f;
 
-    float startY;
+    float baseY;
 
-    void Start()
+    // von außen aufrufbar, um die neue Basis-Höhe zu setzen
+    public void ResetBaseHeight()
     {
-        startY = transform.position.y;
+        baseY = transform.position.y;
     }
 
-    void Update()
+    void OnEnable()
     {
-        float y = startY + Mathf.Sin(Time.time * floatSpeed) * floatAmplitude;
+        ResetBaseHeight();   // beim ersten Aktivieren
+    }
+
+    void LateUpdate()
+    {
+        float y = baseY + Mathf.Sin(Time.time * floatSpeed) * floatAmplitude;
         var pos = transform.position;
         pos.y = y;
         transform.position = pos;

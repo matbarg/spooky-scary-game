@@ -68835,11 +68835,12 @@ MonoBehaviour:
   attackClip: {fileID: 8300000, guid: 0216241824662384d8c318a836f5d38e, type: 3}
   disappearClip: {fileID: 0}
   faceStateParam: FaceState
+  heightOffsetRange: {x: 0.3, y: 0.5}
   spawnBlockMask:
     serializedVersion: 2
     m_Bits: 1
   spawnCollisionCheckRadius: 0.5
-  maxSpawnAttempts: 50
+  maxSpawnAttempts: 100
   playerHead: {fileID: 1285443993}
 --- !u!136 &2006127478
 CapsuleCollider:
