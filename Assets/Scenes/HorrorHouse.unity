@@ -12524,11 +12524,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 730ad49cb45eff64a86cc0c46e2a277c, type: 3}
---- !u!108 &331004116 stripped
-Light:
-  m_CorrespondingSourceObject: {fileID: 8850050855660319022, guid: b694b8ec5c41f6247843a2b67222fda6, type: 3}
-  m_PrefabInstance: {fileID: 1612819268}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &332862819
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22412,6 +22407,11 @@ Transform:
   - {fileID: 78971634}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!108 &574368681 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 8850050855660319022, guid: b694b8ec5c41f6247843a2b67222fda6, type: 3}
+  m_PrefabInstance: {fileID: 502984660}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &574401051
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41489,6 +41489,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1088303943
 GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1088303944}
@@ -41613,6 +41617,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
 --- !u!65 &1088468199
 BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1088468197}
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -78719,7 +78727,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostEnemy
   player: {fileID: 1921069883}
-  flashLight: {fileID: 331004116}
+  flashLight: {fileID: 574368681}
   eyesTarget: {fileID: 1974466290}
   animator: {fileID: 2006127473}
   audioSource: {fileID: 2006127476}
