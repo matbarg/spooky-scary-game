@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8809479479749506278}
   - component: {fileID: 9213342244813879450}
   - component: {fileID: 56694731490509944}
+  - component: {fileID: 8763723918704276089}
   - component: {fileID: 4006986127148047088}
   m_Layer: 0
   m_Name: Flashlight
@@ -36,7 +37,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 181550991881205896}
+  - {fileID: 9058714526893759309}
   - {fileID: 6100443480805545303}
   - {fileID: 2943663367245742325}
   m_Father: {fileID: 0}
@@ -163,7 +164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable
   m_InteractionManager: {fileID: 0}
   m_Colliders:
-  - {fileID: 1751443718359268849}
+  - {fileID: 3845198143296708739}
   m_InteractionLayers:
     m_Bits: 1
   m_DistanceCalculationMode: 1
@@ -313,6 +314,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94f8fb097c47cab4b835beaa4d2f96bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!114 &8763723918704276089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f40441ffa0d24c43900b5e1cec93a1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
+  grabCollider: {fileID: 3845198143296708739}
+  radiusMultiplier: 3
+  heightMultiplier: 3
 --- !u!82 &4006986127148047088
 AudioSource:
   m_ObjectHideFlags: 0
@@ -568,7 +584,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 400000}
   m_LocalEulerAnglesHint: {x: 270, y: 180, z: 0}
---- !u!1 &7420747677398874703
+--- !u!1 &7258966499403667679
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -576,9 +592,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 181550991881205896}
-  - component: {fileID: 8296762006603739519}
-  - component: {fileID: 1751443718359268849}
+  - component: {fileID: 9058714526893759309}
+  - component: {fileID: 8476146605819986022}
+  - component: {fileID: 3845198143296708739}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
@@ -586,13 +602,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &181550991881205896
+--- !u!4 &9058714526893759309
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7420747677398874703}
+  m_GameObject: {fileID: 7258966499403667679}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -601,21 +617,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 400000}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8296762006603739519
+--- !u!33 &8476146605819986022
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7420747677398874703}
+  m_GameObject: {fileID: 7258966499403667679}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!136 &1751443718359268849
+--- !u!136 &3845198143296708739
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7420747677398874703}
+  m_GameObject: {fileID: 7258966499403667679}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
