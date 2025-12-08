@@ -12,6 +12,7 @@ public class Door : MonoBehaviour
     public Text txt;//text
     public AudioSource openDoorAudio;
     public AudioSource closeDoorAudio;
+    public HintUI hintUI;                // zentrales HintUI
     // Start is called before the first frame update
     void Start()
     {
@@ -72,6 +73,12 @@ public class Door : MonoBehaviour
         {
             closeDoorAudio?.Play();
         }
+    }
+
+    public void ShowCannotBeOpened()
+    {
+        if (hintUI != null )
+            hintUI.ShowHint("This door cannot be opened", 2f);
     }
 
     private void OnTriggerExit(Collider coll)//вход и выход в\из  триггера 

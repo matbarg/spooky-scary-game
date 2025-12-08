@@ -53,8 +53,15 @@ public class GhostEnemy : MonoBehaviour
     [Header("Vertreiben")]
     public float repelDisappearDelay = 1f;   // wie lange der Geist schreit, bevor er verschwindet
 
-    bool isRepelling;
+    [Header("Haus-Logik")]
+    public bool requirePlayerInHouse = true;  // falls man abschalten will
 
+    [Header("Angriffshöhe")]
+    public float heightFollowSpeed = 3f;     // wie schnell er seine Höhe anpasst
+    public float attackHeightOffset = 0.0f;  // z.B. 0 oder leicht über Kopf
+
+    bool playerInHouse = false;
+    bool isRepelling;
     int faceStateHash;
 
     // intern
@@ -65,6 +72,7 @@ public class GhostEnemy : MonoBehaviour
     public bool IsActive => isActive;
     float lightTimer;
     bool hasKilledPlayer;
+    bool isAttacking;
 
     void Awake()
     {
@@ -73,6 +81,33 @@ public class GhostEnemy : MonoBehaviour
 
         if (animator != null && !string.IsNullOrEmpty(faceStateParam))
             faceStateHash = Animator.StringToHash(faceStateParam);
+    }
+
+    void LateUpdate()
+    {
+        // Nur wenn der Geist sichtbar/aktiv ist und gerade NICHT angreift
+        if (!isActive || isAttacking || player == null)
+            return;
+
+        // Spielerposition: Kopf, wenn vorhanden, sonst Körper
+        Vector3 targetPos = playerHead != null
+            ? playerHead.position
+            : player.position + Vector3.up * 1.6f;
+
+        // Nur um Y drehen (kein „Umkippen“)
+        Vector3 lookTarget = new Vector3(targetPos.x, transform.position.y, targetPos.z);
+        transform.LookAt(lookTarget);
+    }
+
+    public void SetPlayerInHouse(bool inside)
+    {
+        playerInHouse = inside;
+
+        // Wenn Spieler rausgeht: Geist sofort verschwinden lassen
+        if (!inside && isActive)
+        {
+            SetVisible(false);
+        }
     }
 
     void SetFaceState(int state)
@@ -115,17 +150,42 @@ public class GhostEnemy : MonoBehaviour
     {
         while (true)
         {
+            // Warten, bis der Spieler im Haus ist
+            if (requirePlayerInHouse)
+            {
+                // so lange warten, bis playerInHouse true ist
+                yield return new WaitUntil(() => playerInHouse);
+            }
+
             // 1) warten bis zur nächsten Erscheinung
             float wait = Random.Range(appearDelayRange.x, appearDelayRange.y);
-            yield return new WaitForSeconds(wait);
+            float t = 0f;
 
-            // 2) um den Spieler herum erscheinen (nur X/Z, Y bleibt von GhostFloat)
-            // wenn kein gültiger Spawn gefunden -> diese Runde aussetzen
+            // Wartezeit runterzählen, aber abbrechen wenn Spieler in der Zeit wieder rausgeht
+            while (t < wait)
+            {
+                if (requirePlayerInHouse && !playerInHouse)
+                {
+                    // rausgegangen -  zurück zum Schleifenanfang,
+                    // es wird diesmal kein Spawn ausgelöst
+                    t = 0f;
+                    break;
+                }
+
+                t += Time.deltaTime;
+                yield return null;
+            }
+
+            // wenn der Spieler während der Wartezeit raus ist - nächster Loop
+            if (requirePlayerInHouse && !playerInHouse)
+                continue;
+
+            // 2) Spawn versuchen
             bool spawned = SpawnAroundPlayer();
             if (!spawned)
             {
                 SetVisible(false);
-                continue; // zurück an den Anfang der while(true)-Schleife -> nächster Loop
+                continue;
             }
 
             SetVisible(true);
@@ -318,20 +378,43 @@ public class GhostEnemy : MonoBehaviour
     // Coroutine: Geist fliegt auf den Spieler zu und "trifft" ihn
     IEnumerator AttackPlayer()
     {
+        isAttacking = true;
         SetFaceState(FACE_EVIL);   // beim Zufliegen: Evil
-
         PlayClip(attackClip);
+
+        // GhostFloat ausschalten, damit wir die Höhe kontrollieren können
+        var ghostFloat = GetComponent<GhostFloat>();
+        if (ghostFloat != null)
+            ghostFloat.enabled = false;
 
         while (true)
         {
             if (player == null) yield break;
 
-            // nur auf X/Z zubewegen, Y bleibt von GhostFloat
+            // Zielposition: beim Spieler (oder Kopf, wenn vorhanden)
+            Vector3 playerPos = player.position;
+            if (playerHead != null)
+                playerPos = playerHead.position;
+
+            // gewünschte Höhe = Spieler/Kopf + optionaler Offset
+            float targetY = playerPos.y + attackHeightOffset;
+
             Vector3 currentPos = transform.position;
-            Vector3 targetPos = new Vector3(player.position.x, currentPos.y, player.position.z);
 
-            float dist = Vector3.Distance(currentPos, targetPos);
+            // X/Z: direkt auf den Spieler zu
+            Vector3 targetPosXZ = new Vector3(playerPos.x, currentPos.y, playerPos.z);
+            Vector3 dirXZ = (targetPosXZ - currentPos).normalized;
 
+            // Bewegung auf X/Z
+            currentPos += dirXZ * attackMoveSpeed * Time.deltaTime;
+
+            // Höhe langsam anpassen in Richtung Zielhöhe
+            currentPos.y = Mathf.Lerp(currentPos.y, targetY, heightFollowSpeed * Time.deltaTime);
+
+            transform.position = currentPos;
+
+            // Distanz zum Spieler prüfen (voll 3D)
+            float dist = Vector3.Distance(currentPos, playerPos);
             if (dist <= attackStopDistance)
             {
                 // HIER ist der "Hit" – Geist im Spieler
@@ -339,14 +422,19 @@ public class GhostEnemy : MonoBehaviour
                 break;
             }
 
-            Vector3 dir = (targetPos - currentPos).normalized;
-            transform.position += dir * attackMoveSpeed * Time.deltaTime;
-
-            // immer zum Spieler schauen
-            transform.LookAt(targetPos);
+            // immer zum Spieler schauen (optional inkl. Höhe)
+            Vector3 lookTarget = new Vector3(playerPos.x, currentPos.y, playerPos.z);
+            transform.LookAt(lookTarget);
 
             yield return null;
         }
+
+
+        // Nach Angriff GhostFloat wieder aktivieren (falls du ihn weiter nutzen willst)
+        if (ghostFloat != null)
+            ghostFloat.enabled = true;
+
+        isAttacking = false;
     }
 
     void KillPlayer()

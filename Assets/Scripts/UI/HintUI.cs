@@ -19,10 +19,22 @@ public class HintUI : MonoBehaviour
             canvas.enabled = false; // am Anfang unsichtbar
     }
 
+    public void ShowHint(string message, float showDuration)
+    {
+        if (hintText != null)
+            hintText.text = message;
+        this.showDuration = showDuration;
+
+        if (currentRoutine != null)
+            StopCoroutine(currentRoutine);
+
+        currentRoutine = StartCoroutine(ShowRoutine());
+    }
     public void ShowHint(string message)
     {
         if (hintText != null)
             hintText.text = message;
+        this.showDuration = 2f;
 
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
